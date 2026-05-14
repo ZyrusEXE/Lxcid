@@ -1,4 +1,7 @@
--- // Lxcid Aimbot + Obsidian UI – HUMANIZER SPEED x SLIDER (Full Control)
+-- Lxcid Aimbot + Obsidian UI – HUMANIZER SPEED x SLIDER (Full Control)
+-- Removed: CSync, Bullet visuals, Bullet TP, Vehicle check, full Anti‑Lock options
+-- Anti‑Lock dropdown now only: Multiply, Behind, Shake
+-- FOV slider fixed
 
 -- Load Obsidian library
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
@@ -31,69 +34,18 @@ task.spawn(function() task.wait(0.2) enlargeIcon() end)
 local Tabs = {
     Main = Window:AddTab("Main", "crosshair"),
     Rage = Window:AddTab("Rage", "zap"),
-    Silent = Window:AddTab("Visuals", "eye"),
-    View = Window:AddTab("Settings", "settings"),
+    Visuals = Window:AddTab("Visuals", "eye"),
+    Settings = Window:AddTab("Settings", "settings"),
 }
 
--- Config helpers (unchanged)
-local ConfigFolder = "Lxcid_Configs"
-if not isfolder(ConfigFolder) then makefolder(ConfigFolder) end
-
-local function GetConfigNames()
-    local names = {}
-    for _, file in ipairs(listfiles(ConfigFolder)) do
-        local name = file:match("([^/]+)%.cfg$")
-        if name then table.insert(names, name) end
-    end
-    return names
-end
-
-local function SaveConfig(name)
-    local data = {}
-    for flag, obj in pairs(Toggles) do
-        if type(obj) == "table" and obj.Value ~= nil then data[flag] = { type = "toggle", value = obj.Value } end
-    end
-    for flag, obj in pairs(Options) do
-        if type(obj) == "table" and obj.Value ~= nil then
-            local val = obj.Value
-            if type(val) == "table" and val.Transparency ~= nil then
-                val = { r = val.Value.R, g = val.Value.G, b = val.Value.B, t = val.Transparency }
-            elseif typeof(val) == "Color3" then val = { r = val.R, g = val.G, b = val.B }
-            elseif typeof(val) == "EnumItem" then val = val.Name end
-            data[flag] = { type = "option", value = val }
-        end
-    end
-    writefile(ConfigFolder .. "/" .. name .. ".cfg", game:GetService("HttpService"):JSONEncode(data))
-end
-
-local function LoadConfig(name)
-    local success, content = pcall(function() return readfile(ConfigFolder .. "/" .. name .. ".cfg") end)
-    if not success then return false end
-    local data = game:GetService("HttpService"):JSONDecode(content)
-    for flag, entry in pairs(data) do
-        if entry.type == "toggle" and Toggles[flag] then Toggles[flag]:SetValue(entry.value)
-        elseif entry.type == "option" and Options[flag] then
-            local val = entry.value
-            if type(val) == "table" and val.r then
-                if val.t then Options[flag]:SetValue(Color3.new(val.r, val.g, val.b), val.t)
-                else Options[flag]:SetValue(Color3.new(val.r, val.g, val.b)) end
-            else Options[flag]:SetValue(val) end
-        end
-    end
-    return true
-end
-
-local function DeleteConfig(name)
-    local path = ConfigFolder .. "/" .. name .. ".cfg"
-    if isfile(path) then delfile(path) end
-end
+-- ======================== UI ELEMENTS ========================
 
 -- Main Tab
 local MainGroup = Tabs.Main:AddLeftGroupbox("Camlock", "")
 MainGroup:AddToggle("Enabled", { Text = "Enabled", Default = false })
 MainGroup:AddToggle("StickyAim", { Text = "Sticky Aim", Default = false })
 
--- Humanizer section (all sliders used now)
+-- Humanizer section
 MainGroup:AddToggle("Humanizer", { Text = "Humanizer", Default = false })
 MainGroup:AddSlider("HumanizerMinSpeed", { Text = "Min Speed", Default = 0.06, Min = 0.01, Max = 1, Rounding = 3 })
 MainGroup:AddSlider("HumanizerMaxSpeed", { Text = "Max Speed", Default = 0.09, Min = 0.01, Max = 1, Rounding = 3 })
@@ -117,11 +69,11 @@ FlickGroup:AddSlider("AutoAirDelay", { Text = "Auto Air Delay", Default = 0.22, 
 FlickGroup:AddDropdown("LockMethod", { Text = "Lock Method", Values = { "Index", "Namecall" }, Default = "Index" })
 
 local GunGroup = Tabs.Main:AddLeftGroupbox("Gun Modification", "")
-GunGroup:AddToggle("BulletTP", { Text = "Bullet TP", Default = false })
+-- BulletTP removed
 GunGroup:AddToggle("RapidFire", { Text = "Rapid Fire", Default = false })
 GunGroup:AddSlider("RapidFireDelay", { Text = "Rapid Fire Delay", Default = 0.04, Min = 0, Max = 1, Rounding = 2, Suffix = "" })
 
--- SIMPLE AIM PART DROPDOWNS
+-- Hit Part
 local HitGroup = Tabs.Main:AddLeftGroupbox("Hit Part", "")
 HitGroup:AddDropdown("AimPart", {
     Text = "Aim Part",
@@ -148,65 +100,47 @@ local ChecksGroup = Tabs.Main:AddRightGroupbox("Checks", "")
 ChecksGroup:AddToggle("KnockOut", { Text = "KnockOut", Default = false })
 ChecksGroup:AddToggle("Wall", { Text = "Wall", Default = false })
 ChecksGroup:AddToggle("Friend", { Text = "Friend", Default = false })
-ChecksGroup:AddToggle("Vehicle", { Text = "Vehicle", Default = false })
+-- Vehicle removed
 ChecksGroup:AddToggle("Team", { Text = "Team", Default = false })
 
 -- Rage Tab
 local AntiLockGroup = Tabs.Rage:AddLeftGroupbox("Anti Lock", "")
 AntiLockGroup:AddToggle("EnableAntiLock", { Text = "Enable Anti Lock", Default = false })
 AntiLockGroup:AddToggle("AntiNetwork", { Text = "Anti Network", Default = false })
-AntiLockGroup:AddDropdown("AntiLockType", { Text = "Anti Lock Type", Values = { "Zero","Multiply","Shake","Behind","Down","Forward","Left","One","Right","Up" }, Default = "Zero" })
+-- Only Multiply, Behind, Shake
+AntiLockGroup:AddDropdown("AntiLockType", { Text = "Anti Lock Type", Values = { "Multiply", "Behind", "Shake" }, Default = "Multiply" })
 
 local CFrameGroup = Tabs.Rage:AddLeftGroupbox("CFrame", "")
 CFrameGroup:AddToggle("LoadCFrame", { Text = "CFrame", Default = false })
 CFrameGroup:AddSlider("CFrame_SpeedPercent", { Text = "Speed", Default = 3, Min = 0, Max = 100, Rounding = 0, Suffix = "%" })
 
-local CSyncGroup = Tabs.Rage:AddRightGroupbox("CSync", "")
-CSyncGroup:AddToggle("CSync_Enabled", { Text = "Enabled", Default = false })
-CSyncGroup:AddToggle("CSync_Spoof", { Text = "Spoof", Default = false })
-CSyncGroup:AddDropdown("CSync_Type", { Text = "Type", Values = { "Orbit", "Random", "Spiral", "Spherical", "Attach" }, Default = "Orbit" })
-CSyncGroup:AddSlider("CSync_Distance", { Text = "Distance", Default = 10, Min = 0, Max = 100, Rounding = 0 })
-CSyncGroup:AddSlider("CSync_Height", { Text = "Height", Default = 2, Min = -50, Max = 50, Rounding = 0 })
-CSyncGroup:AddSlider("CSync_Speed", { Text = "Speed", Default = 10, Min = 0, Max = 50, Rounding = 0 })
-CSyncGroup:AddSlider("CSync_RandomAmount", { Text = "Random Amount", Default = 10, Min = 0, Max = 100, Rounding = 0 })
+-- CSync section completely removed
 
 -- Visuals Tab
-local VisualsGlobalGroup = Tabs.Silent:AddLeftGroupbox("Global", "")
+local VisualsGlobalGroup = Tabs.Visuals:AddLeftGroupbox("Global", "")
 VisualsGlobalGroup:AddToggle("BoxCorners", { Text = "Box Corners", Default = false })
 VisualsGlobalGroup:AddSlider("BoxWidth", { Text = "Box Width", Default = 2, Min = 0, Max = 10, Rounding = 0 })
 VisualsGlobalGroup:AddSlider("BoxHeight", { Text = "Box Height", Default = 2, Min = 0, Max = 10, Rounding = 0 })
 VisualsGlobalGroup:AddToggle("HealthBarEnabled", { Text = "Health Bar", Default = false })
 VisualsGlobalGroup:AddToggle("NameEnabled", { Text = "Name", Default = false })
 
-local VisualsBulletGroup = Tabs.Silent:AddRightGroupbox("Bullet", "")
-VisualsBulletGroup:AddToggle("BulletEnabled", { Text = "Enable", Default = false })
-VisualsBulletGroup:AddToggle("BulletFade", { Text = "Fade", Default = false })
-VisualsBulletGroup:AddSlider("BulletSize", { Text = "Size", Default = 1, Min = 0, Max = 10, Rounding = 1 })
-VisualsBulletGroup:AddSlider("BulletDuration", { Text = "Duration", Default = 1, Min = 0, Max = 10, Rounding = 1 })
-VisualsBulletGroup:AddDropdown("BulletTexture", { Text = "Texture", Values = { "Cool", "Electro", "None" }, Default = "Cool" })
+-- Bullet visual section completely removed
 
 -- Settings Tab
-local ConfigGroup = Tabs.View:AddLeftGroupbox("Config", "")
-local configDropdown = ConfigGroup:AddDropdown("ConfigSelector", { Text = "Config", Values = GetConfigNames(), Default = "None", Multi = false })
-ConfigGroup:AddInput("ConfigName", { Default = "", Text = "Config Name", Placeholder = "Config Name" })
-ConfigGroup:AddButton({ Text = "Create", Func = function() if Options.ConfigName.Value ~= "" then SaveConfig(Options.ConfigName.Value) configDropdown:RefreshOptions(GetConfigNames()) configDropdown:SetSelected(Options.ConfigName.Value) end end })
-ConfigGroup:AddButton({ Text = "Save", Func = function() if Options.ConfigSelector.Value and Options.ConfigSelector.Value ~= "None" then SaveConfig(Options.ConfigSelector.Value) end end })
-ConfigGroup:AddButton({ Text = "Load", Func = function() if Options.ConfigSelector.Value and Options.ConfigSelector.Value ~= "None" then LoadConfig(Options.ConfigSelector.Value) end end })
-ConfigGroup:AddButton({ Text = "Delete", Func = function() if Options.ConfigSelector.Value and Options.ConfigSelector.Value ~= "None" then DeleteConfig(Options.ConfigSelector.Value) local lst = GetConfigNames() if #lst==0 then lst={"None"} end configDropdown:RefreshOptions(lst) configDropdown:SetSelected("None") end end })
-ConfigGroup:AddButton({ Text = "Refresh", Func = function() local lst = GetConfigNames() if #lst==0 then lst={"None"} end configDropdown:RefreshOptions(lst) end })
-
-local KeybindsGroup = Tabs.View:AddRightGroupbox("Keybinds", "")
+local KeybindsGroup = Tabs.Settings:AddLeftGroupbox("Keybinds", "")
 KeybindsGroup:AddLabel("Lock Keybind"):AddKeyPicker("LockKeybind", { Default = "End", Mode = "Toggle", NoUI = true, Text = "Lock Keybind" })
 
-local CameraGroup = Tabs.View:AddRightGroupbox("Camera", "")
+local CameraGroup = Tabs.Settings:AddLeftGroupbox("Camera", "")
 CameraGroup:AddSlider("FieldOfView", { Text = "Field Of View", Default = 80, Min = 1, Max = 120, Rounding = 0 })
+
+-- Config system removed
 
 -- ======================== WAIT FOR UI ========================
 task.wait(0.5)
 local Options = Library.Options
 local Toggles = Library.Toggles
 
--- ======================== FOV CONTROLLER (FIX) ========================
+-- ======================== FOV CONTROLLER (FIXED) ========================
 local RunService = game:GetService("RunService")
 local WorkspaceCamera = workspace.CurrentCamera
 RunService.RenderStepped:Connect(function()
@@ -308,7 +242,7 @@ local function GetFirstTargetInRadius()
         if Toggles.KnockOut.Value and IsKnocked(char) then continue end
         if Toggles.Friend.Value and player:IsFriendsWith(LocalPlayer.UserId) then continue end
         if Toggles.Team.Value and player.Team == LocalPlayer.Team then continue end
-        if Toggles.Vehicle.Value and char:FindFirstChildWhichIsA("VehicleSeat") then continue end
+        -- Vehicle check removed
 
         local hrp = char:FindFirstChild("HumanoidRootPart")
         if not hrp then continue end
@@ -503,18 +437,15 @@ RunService.RenderStepped:Connect(function(dt)
 
     local smooth
     if Toggles.Humanizer.Value then
-        -- Accelerating speed from Humanizer sliders
         local minSpeed = Options.HumanizerMinSpeed.Value or 0.06
         local maxSpeed = Options.HumanizerMaxSpeed.Value or 0.09
         local acceleration = Options.HumanizerAcceleration.Value or 0.013
         local elapsed = tick() - aimStart
         local humanizerSpeed = math.min(minSpeed + elapsed * acceleration, maxSpeed)
 
-        -- Scale by the Camera Smoothness slider
         local slider = Options.CameraSmoothness.Value or 0.9
         smooth = humanizerSpeed * math.clamp(slider, 0, 1)
 
-        -- Random offset (unchanged)
         local hRange = Options.HumanizerHOffset.Value or 0.2
         local vRange = Options.HumanizerVOffset.Value or 0.15
         local changeInterval = Options.HumanizerChangeInterval.Value or 0.3
@@ -529,7 +460,6 @@ RunService.RenderStepped:Connect(function(dt)
         end
         aimPos = aimPos + humanizerOffset
     else
-        -- Humanizer OFF → slider directly controls smoothness
         smooth = Options.CameraSmoothness.Value or 0.9
     end
 
@@ -538,7 +468,7 @@ RunService.RenderStepped:Connect(function(dt)
     Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, aimPos), smooth)
 end)
 
--- ======================== STICKY AIM (also uses alpha) ========================
+-- ======================== STICKY AIM ========================
 RunService.RenderStepped:Connect(function(dt)
     if not Toggles.StickyAim.Value or not Toggles.Enabled.Value or not LockedTarget then return end
     if Toggles.KnockOut.Value and IsKnocked(LockedTarget) then return end
@@ -610,21 +540,25 @@ task.spawn(function()
     end
 end)
 
--- ======================== ANTI LOCK ========================
+-- ======================== ANTI LOCK (Multiply, Behind, Shake only) ========================
 RunService.Heartbeat:Connect(function()
     if not Toggles.EnableAntiLock.Value then return end
     local char = LocalPlayer.Character
     if not char then return end
     local root = char:FindFirstChild("HumanoidRootPart")
     if not root then return end
-    local mode = Options.AntiLockType.Value or "Zero"
+    local mode = Options.AntiLockType.Value or "Multiply"
     local vel = root.Velocity
-    if mode == "Zero" then root.Velocity = Vector3.new(0,0,0)
-    elseif mode == "Sky" then root.Velocity = Vector3.new(vel.X,100,vel.Z)
-    elseif mode == "Ground" then root.Velocity = Vector3.new(vel.X,-400,vel.Z)
+    if mode == "Multiply" then
+        root.Velocity = vel * 2
+    elseif mode == "Behind" then
+        local look = Camera.CFrame.LookVector
+        root.CFrame = root.CFrame - look * 5
+    elseif mode == "Shake" then
+        root.CFrame = root.CFrame * CFrame.Angles(math.sin(tick()*50)*0.1, math.sin(tick()*60)*0.1, 0)
     end
     RunService.RenderStepped:Wait()
-    root.Velocity = vel
+    if mode ~= "Behind" and mode ~= "Shake" then root.Velocity = vel end
 end)
 
 -- ======================== CFrame SPEED ========================
@@ -707,4 +641,4 @@ if pcall(function() return Drawing.new end) then
     Players.PlayerAdded:Connect(SetupESP)
 else warn("Drawing library missing.") end
 
-print("Lxcid - Aimbot + UI loaded. T / DPadDown to lock. Humanizer speed x slider active. FOV slider now works.")
+print("Lxcid - Aimbot + UI loaded. T / DPadDown to lock. Removed CSync, Bullet visuals, Bullet TP, Vehicle. Anti‑Lock only Multiply/Behind/Shake. FOV works.")
