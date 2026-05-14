@@ -206,9 +206,20 @@ task.wait(0.5)
 local Options = Library.Options
 local Toggles = Library.Toggles
 
+-- ======================== FOV CONTROLLER (FIX) ========================
+local RunService = game:GetService("RunService")
+local WorkspaceCamera = workspace.CurrentCamera
+RunService.RenderStepped:Connect(function()
+    if Options.FieldOfView then
+        local fov = Options.FieldOfView.Value
+        if WorkspaceCamera and WorkspaceCamera.FieldOfView ~= fov then
+            WorkspaceCamera.FieldOfView = fov
+        end
+    end
+end)
+
 -- ======================== AIMBOT LOGIC ========================
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local Stats = game:GetService("Stats")
@@ -696,4 +707,4 @@ if pcall(function() return Drawing.new end) then
     Players.PlayerAdded:Connect(SetupESP)
 else warn("Drawing library missing.") end
 
-print("Lxcid - Aimbot + UI loaded. T / DPadDown to lock. Humanizer speed x slider active.")
+print("Lxcid - Aimbot + UI loaded. T / DPadDown to lock. Humanizer speed x slider active. FOV slider now works.")
