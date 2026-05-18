@@ -163,18 +163,55 @@ local predictionTable = {
 
 -- ======================== HELPERS ========================
 local function IsBehindWall(targetPart)
-    if not LocalPlayer.Character or not targetPart or not targetPart.Parent then return false end
+    if not LocalPlayer.Character or not targetPart or not targetPart.Parent then
+        return false
+    end
+
     local origin = Camera.CFrame.Position
     local direction = targetPart.Position - origin
-    if direction.Magnitude < 0.001 then return false end
-    local success, result = pcall(function() return Workspace:Raycast(origin, direction.Unit * 500) end)
-    if not success then return false end
-    if result then
-        local hit = result.Instance
-        if targetPart.Parent and hit:IsDescendantOf(targetPart.Parent) then return false
-        elseif hit:IsDescendantOf(LocalPlayer.Character) then return false
-        else return true end
+    if direction.Magnitude < 0.001 then
+        return false
     end
+
+    local dir = direction.Unit * 500
+
+    -- 1. Try modern raycast
+    local success, result = pcall(function()
+        return Workspace:Raycast(origin, dir)
+    end)
+
+    if success then
+        -- Modern API worked
+        if result then
+            local hit = result.Instance
+            if targetPart.Parent and hit:IsDescendantOf(targetPart.Parent) then
+                return false   -- hit the target itself
+            elseif hit:IsDescendantOf(LocalPlayer.Character) then
+                return false   -- hit yourself
+            else
+                return true    -- hit a wall
+            end
+        end
+        return false   -- no hit = clear
+    end
+
+    -- 2. Fallback to old FindPartOnRay (legacy executor)
+    local success2, hit = pcall(function()
+        local ray = Ray.new(origin, dir)
+        local ignore = {LocalPlayer.Character, targetPart.Parent}
+        return Workspace:FindPartOnRay(ray, ignore, false, true)
+    end)
+
+    if success2 and hit then
+        -- If it hit the target or our character, it's clear
+        if hit:IsDescendantOf(targetPart.Parent) or hit:IsDescendantOf(LocalPlayer.Character) then
+            return false
+        else
+            return true   -- hit a wall
+        end
+    end
+
+    -- If both methods fail, assume clear
     return false
 end
 
