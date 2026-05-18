@@ -1,7 +1,4 @@
--- Lxcid Aimbot + Obsidian UI – HUMANIZER SPEED x SLIDER (Full Control)
--- Removed: CSync, Bullet visuals, Bullet TP, Vehicle check, full Anti‑Lock options
--- Anti‑Lock dropdown now only: Multiply, Behind, Shake
--- FOV slider fixed
+-- // Lxcid Aimbot + Obsidian UI – HUMANIZER SPEED x SLIDER + P1000 DESYNC ONLY
 
 -- Load Obsidian library
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
@@ -40,12 +37,11 @@ local Tabs = {
 
 -- ======================== UI ELEMENTS ========================
 
--- Main Tab
+-- Main Tab (unchanged)
 local MainGroup = Tabs.Main:AddLeftGroupbox("Camlock", "")
 MainGroup:AddToggle("Enabled", { Text = "Enabled", Default = false })
 MainGroup:AddToggle("StickyAim", { Text = "Sticky Aim", Default = false })
 
--- Humanizer section
 MainGroup:AddToggle("Humanizer", { Text = "Humanizer", Default = false })
 MainGroup:AddSlider("HumanizerMinSpeed", { Text = "Min Speed", Default = 0.06, Min = 0.01, Max = 1, Rounding = 3 })
 MainGroup:AddSlider("HumanizerMaxSpeed", { Text = "Max Speed", Default = 0.09, Min = 0.01, Max = 1, Rounding = 3 })
@@ -69,23 +65,17 @@ FlickGroup:AddSlider("AutoAirDelay", { Text = "Auto Air Delay", Default = 0.22, 
 FlickGroup:AddDropdown("LockMethod", { Text = "Lock Method", Values = { "Index", "Namecall" }, Default = "Index" })
 
 local GunGroup = Tabs.Main:AddLeftGroupbox("Gun Modification", "")
--- BulletTP removed
 GunGroup:AddToggle("RapidFire", { Text = "Rapid Fire", Default = false })
 GunGroup:AddSlider("RapidFireDelay", { Text = "Rapid Fire Delay", Default = 0.04, Min = 0, Max = 1, Rounding = 2, Suffix = "" })
 
--- Hit Part
 local HitGroup = Tabs.Main:AddLeftGroupbox("Hit Part", "")
 HitGroup:AddDropdown("AimPart", {
-    Text = "Aim Part",
-    Values = { "HumanoidRootPart", "Head", "UpperTorso", "LowerTorso", "RightFoot", "LeftFoot" },
-    Default = "Head",
-    Multi = false
+    Text = "Aim Part", Values = { "HumanoidRootPart", "Head", "UpperTorso", "LowerTorso", "RightFoot", "LeftFoot" },
+    Default = "Head", Multi = false
 })
 HitGroup:AddDropdown("AirAimPart", {
-    Text = "Air Aim Part",
-    Values = { "HumanoidRootPart", "Head", "UpperTorso", "LowerTorso", "RightFoot", "LeftFoot" },
-    Default = "HumanoidRootPart",
-    Multi = false
+    Text = "Air Aim Part", Values = { "HumanoidRootPart", "Head", "UpperTorso", "LowerTorso", "RightFoot", "LeftFoot" },
+    Default = "HumanoidRootPart", Multi = false
 })
 
 local SilentAimGroup = Tabs.Main:AddRightGroupbox("Silent Aim", "")
@@ -100,21 +90,17 @@ local ChecksGroup = Tabs.Main:AddRightGroupbox("Checks", "")
 ChecksGroup:AddToggle("KnockOut", { Text = "KnockOut", Default = false })
 ChecksGroup:AddToggle("Wall", { Text = "Wall", Default = false })
 ChecksGroup:AddToggle("Friend", { Text = "Friend", Default = false })
--- Vehicle removed
 ChecksGroup:AddToggle("Team", { Text = "Team", Default = false })
 
--- Rage Tab
+-- ======================== RAGE TAB – ANTI LOCK (DESYNC ONLY) ========================
 local AntiLockGroup = Tabs.Rage:AddLeftGroupbox("Anti Lock", "")
 AntiLockGroup:AddToggle("EnableAntiLock", { Text = "Enable Anti Lock", Default = false })
 AntiLockGroup:AddToggle("AntiNetwork", { Text = "Anti Network", Default = false })
--- Only Multiply, Behind, Shake
-AntiLockGroup:AddDropdown("AntiLockType", { Text = "Anti Lock Type", Values = { "Multiply", "Behind", "Shake" }, Default = "Multiply" })
+AntiLockGroup:AddToggle("P1000Desync", { Text = "P1000 Desync", Default = false })
 
 local CFrameGroup = Tabs.Rage:AddLeftGroupbox("CFrame", "")
 CFrameGroup:AddToggle("LoadCFrame", { Text = "CFrame", Default = false })
 CFrameGroup:AddSlider("CFrame_SpeedPercent", { Text = "Speed", Default = 3, Min = 0, Max = 100, Rounding = 0, Suffix = "%" })
-
--- CSync section completely removed
 
 -- Visuals Tab
 local VisualsGlobalGroup = Tabs.Visuals:AddLeftGroupbox("Global", "")
@@ -124,8 +110,6 @@ VisualsGlobalGroup:AddSlider("BoxHeight", { Text = "Box Height", Default = 2, Mi
 VisualsGlobalGroup:AddToggle("HealthBarEnabled", { Text = "Health Bar", Default = false })
 VisualsGlobalGroup:AddToggle("NameEnabled", { Text = "Name", Default = false })
 
--- Bullet visual section completely removed
-
 -- Settings Tab
 local KeybindsGroup = Tabs.Settings:AddLeftGroupbox("Keybinds", "")
 KeybindsGroup:AddLabel("Lock Keybind"):AddKeyPicker("LockKeybind", { Default = "End", Mode = "Toggle", NoUI = true, Text = "Lock Keybind" })
@@ -133,14 +117,12 @@ KeybindsGroup:AddLabel("Lock Keybind"):AddKeyPicker("LockKeybind", { Default = "
 local CameraGroup = Tabs.Settings:AddLeftGroupbox("Camera", "")
 CameraGroup:AddSlider("FieldOfView", { Text = "Field Of View", Default = 80, Min = 1, Max = 120, Rounding = 0 })
 
--- Config system removed
-
 -- ======================== WAIT FOR UI ========================
 task.wait(0.5)
 local Options = Library.Options
 local Toggles = Library.Toggles
 
--- ======================== FOV CONTROLLER (FIXED) ========================
+-- ======================== FOV CONTROLLER ========================
 local RunService = game:GetService("RunService")
 local WorkspaceCamera = workspace.CurrentCamera
 RunService.RenderStepped:Connect(function()
@@ -152,7 +134,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- ======================== AIMBOT LOGIC ========================
+-- ======================== AIMBOT LOGIC (UNCHANGED) ========================
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
@@ -242,7 +224,6 @@ local function GetFirstTargetInRadius()
         if Toggles.KnockOut.Value and IsKnocked(char) then continue end
         if Toggles.Friend.Value and player:IsFriendsWith(LocalPlayer.UserId) then continue end
         if Toggles.Team.Value and player.Team == LocalPlayer.Team then continue end
-        -- Vehicle check removed
 
         local hrp = char:FindFirstChild("HumanoidRootPart")
         if not hrp then continue end
@@ -540,25 +521,71 @@ task.spawn(function()
     end
 end)
 
--- ======================== ANTI LOCK (Multiply, Behind, Shake only) ========================
-RunService.Heartbeat:Connect(function()
-    if not Toggles.EnableAntiLock.Value then return end
-    local char = LocalPlayer.Character
-    if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-    local mode = Options.AntiLockType.Value or "Multiply"
-    local vel = root.Velocity
-    if mode == "Multiply" then
-        root.Velocity = vel * 2
-    elseif mode == "Behind" then
-        local look = Camera.CFrame.LookVector
-        root.CFrame = root.CFrame - look * 5
-    elseif mode == "Shake" then
-        root.CFrame = root.CFrame * CFrame.Angles(math.sin(tick()*50)*0.1, math.sin(tick()*60)*0.1, 0)
+-- ======================== P1000 DESYNC (REPLACES OLD ANTI LOCK) ========================
+local DesyncActive = false
+local DesyncStore = {}
+
+-- Keybind to toggle desync manually (if you want, but it's already tied to UI toggle)
+-- We'll use the UI toggle directly, but also allow P key as a fallback? We'll keep the original keybind for P as well.
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.P then
+        Toggles.P1000Desync:SetValue(not Toggles.P1000Desync.Value)
     end
-    RunService.RenderStepped:Wait()
-    if mode ~= "Behind" and mode ~= "Shake" then root.Velocity = vel end
+    -- Rejoin with "=" key
+    if input.KeyCode == Enum.KeyCode.Equals then
+        game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+    end
+end)
+
+-- Helper functions from original P1000 script
+local function RandomNumberRange(a)
+    return math.random(-a * 100, a * 100) / 100
+end
+
+local function RandomVectorRange(a, b, c)
+    return Vector3.new(RandomNumberRange(a), RandomNumberRange(b), RandomNumberRange(c))
+end
+
+-- CFrame hook setup
+local XDDDDDD = nil
+XDDDDDD = hookmetamethod(game, "__index", newcclosure(function(self, key)
+    if Toggles.EnableAntiLock.Value and Toggles.P1000Desync.Value then
+        if not checkcaller() then
+            if key == "CFrame" and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and
+               LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid.Health > 0 then
+                if self == LocalPlayer.Character.HumanoidRootPart then
+                    return DesyncStore[1] or CFrame.new()
+                elseif self == LocalPlayer.Character.Head then
+                    return DesyncStore[1] and DesyncStore[1] + Vector3.new(0, LocalPlayer.Character.HumanoidRootPart.Size / 2 + 0.5, 0) or CFrame.new()
+                end
+            end
+        end
+    end
+    return XDDDDDD(self, key)
+end))
+
+-- Desync Heartbeat loop
+RunService.Heartbeat:Connect(function()
+    if Toggles.EnableAntiLock.Value and Toggles.P1000Desync.Value then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 then
+            local hrp = char.HumanoidRootPart
+            DesyncStore[1] = hrp.CFrame
+            DesyncStore[2] = hrp.AssemblyLinearVelocity
+
+            local spoofCF = hrp.CFrame
+            spoofCF = spoofCF * CFrame.new(Vector3.new(0, 0, 0))
+            spoofCF = spoofCF * CFrame.Angles(math.rad(RandomNumberRange(180)), math.rad(RandomNumberRange(180)), math.rad(RandomNumberRange(180)))
+            hrp.CFrame = spoofCF
+            hrp.AssemblyLinearVelocity = Vector3.new(1, 1, 1) * 16384
+
+            RunService.RenderStepped:Wait()
+
+            hrp.CFrame = DesyncStore[1]
+            hrp.AssemblyLinearVelocity = DesyncStore[2]
+        end
+    end
 end)
 
 -- ======================== CFrame SPEED ========================
@@ -641,4 +668,4 @@ if pcall(function() return Drawing.new end) then
     Players.PlayerAdded:Connect(SetupESP)
 else warn("Drawing library missing.") end
 
-print("Lxcid - Aimbot + UI loaded. T / DPadDown to lock. Removed CSync, Bullet visuals, Bullet TP, Vehicle. Anti‑Lock only Multiply/Behind/Shake. FOV works.")
+print("Lxcid - Aimbot + P1000 Desync loaded. T lock, P toggle desync, = rejoin.")
